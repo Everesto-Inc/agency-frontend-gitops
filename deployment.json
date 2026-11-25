@@ -6,8 +6,11 @@
   "healthPath": "/healthz",
   "publicUrl": true,
   "redis": false,
-  "config": [],
-  "secrets": [
-    "API_URL"
-  ]
+  "config": [
+    {
+      "name": "API_URL",
+      "value": "https://agency-dev.everesto.live"
+    }
+  ],
+  "secrets": []
 }

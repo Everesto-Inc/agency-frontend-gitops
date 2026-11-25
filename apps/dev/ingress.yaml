@@ -1,4 +1,6 @@
-# https://agency-frontend-dev.everesto.live — Cloudflare → alb (TLS *.everesto.live) → in-cluster Traefik → this Ingress → Service agency-frontend
+# https://agency-dev.everesto.live — Cloudflare → alb (rule *-dev.everesto.live, no alb change) → in-cluster Traefik → here.
+# The backend answers /api on the same host (Ingress agency-api in agency-backend-gitops) → one address, no CORS.
+# https://agency-frontend-dev.everesto.live keeps working (Backstage default name).
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -6,6 +8,12 @@ metadata:
 spec:
   ingressClassName: traefik
   rules:
+    - host: agency-dev.everesto.live
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend: { service: { name: agency-frontend, port: { number: 80 } } }
     - host: agency-frontend-dev.everesto.live
       http:
         paths:

@@ -16,6 +16,8 @@ spec:
         - name: app
           image: ghcr.io/everesto-inc/agency-frontend
           ports: [{ containerPort: 8080 }]
+          env:   # config (not secret) — wins over a secret of the same name
+            - { name: API_URL, value: "https://agency-dev.everesto.live" }   # same address as the app: /api → backend, no CORS
           envFrom:
             - secretRef: { name: agency-frontend }   # secrets: Infisical agency-frontend-gitops / dev (via ESO)
           resources:
