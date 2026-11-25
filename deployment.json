@@ -1,0 +1,13 @@
+{
+  "nsKey": "agency-frontend",
+  "port": 8080,
+  "memoryMi": 192,
+  "replicas": 1,
+  "healthPath": "/healthz",
+  "publicUrl": true,
+  "redis": false,
+  "config": [],
+  "secrets": [
+    "API_URL"
+  ]
+}

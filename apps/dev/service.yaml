@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: agency-frontend
+spec:
+  selector: { app: agency-frontend }
+  ports: [{ port: 80, targetPort: 8080 }]

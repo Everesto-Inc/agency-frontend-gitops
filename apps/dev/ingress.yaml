@@ -1,0 +1,14 @@
+# https://agency-frontend-dev.everesto.live — Cloudflare → alb (TLS *.everesto.live) → in-cluster Traefik → this Ingress → Service agency-frontend
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: agency-frontend
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: agency-frontend-dev.everesto.live
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend: { service: { name: agency-frontend, port: { number: 80 } } }

@@ -1,0 +1,45 @@
+# Applied automatically by the platform (root app platform-tenants). Manual fallback, control plane:
+#   sudo kubectl apply -f https://raw.githubusercontent.com/Everesto-Inc/agency-frontend-gitops/main/argocd/argocd.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: orchid
+  namespace: argocd
+spec:
+  description: DevOps space orchid
+  sourceRepos:
+    - https://github.com/Everesto-Inc/*-gitops.git
+  destinations:   # exactly the namespaces of this space's apps (dev-<key> / prod-<key>)
+    - { server: https://kubernetes.default.svc, namespace: dev-agency-frontend }
+    - { server: https://kubernetes.default.svc, namespace: prod-agency-frontend }
+  clusterResourceWhitelist: []   # nothing cluster-wide (the namespace comes from the platform)
+  namespaceResourceWhitelist:     # app objects only — no RBAC, NetworkPolicy, quota, Secret, SecretStore
+    - { group: 'apps', kind: Deployment }
+    - { group: '', kind: Service }
+    - { group: '', kind: ConfigMap }
+    - { group: 'networking.k8s.io', kind: Ingress }
+    - { group: 'external-secrets.io', kind: ExternalSecret }
+    - { group: 'batch', kind: CronJob }
+    - { group: 'batch', kind: Job }
+    - { group: 'autoscaling', kind: HorizontalPodAutoscaler }
+    - { group: 'policy', kind: PodDisruptionBudget }
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: dev-agency-frontend
+  namespace: argocd
+  # ArgoCD UI → Filters → Labels: app.kubernetes.io/managed-by=backstage (everything Backstage created),
+  # everesto.live/project=<space>, everesto.live/env=dev|prod
+  labels: { app.kubernetes.io/managed-by: backstage, everesto.live/project: orchid, everesto.live/env: dev }
+  finalizers: [resources-finalizer.argocd.argoproj.io]   # deleting the app removes its pods too
+spec:
+  project: orchid
+  source:
+    repoURL: https://github.com/Everesto-Inc/agency-frontend-gitops.git
+    targetRevision: main
+    path: apps/dev
+  destination: { server: https://kubernetes.default.svc, namespace: dev-agency-frontend }
+  syncPolicy:
+    # MANUAL sync: after "Deploy" / "Promote" click Sync in ArgoCD
+    syncOptions: [CreateNamespace=true]

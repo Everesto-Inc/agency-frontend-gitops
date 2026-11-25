@@ -1,0 +1,3 @@
+site_name: agency-frontend-gitops
+nav: [{ Runbook: index.md }]
+plugins: [techdocs-core]

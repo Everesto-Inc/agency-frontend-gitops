@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: agency-frontend
+  labels: { app: agency-frontend, everesto.live/project: orchid, everesto.live/env: dev }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: agency-frontend } }
+  template:
+    metadata:
+      labels: { app: agency-frontend, everesto.live/project: orchid, everesto.live/env: dev }
+    spec:
+      nodeSelector: { everesto.live/pool: tenants }
+      securityContext: { runAsNonRoot: true, seccompProfile: { type: RuntimeDefault } }
+      containers:
+        - name: app
+          image: ghcr.io/everesto-inc/agency-frontend
+          ports: [{ containerPort: 8080 }]
+          envFrom:
+            - secretRef: { name: agency-frontend }   # secrets: Infisical agency-frontend-gitops / dev (via ESO)
+          resources:
+            requests: { cpu: 25m, memory: 96Mi }
+            limits: { memory: 192Mi }
+          readinessProbe: { httpGet: { path: /healthz, port: 8080 }, periodSeconds: 10 }
+          livenessProbe: { httpGet: { path: /healthz, port: 8080 }, initialDelaySeconds: 20, periodSeconds: 20, failureThreshold: 3 }
+          securityContext: { allowPrivilegeEscalation: false, capabilities: { drop: [ALL] } }
