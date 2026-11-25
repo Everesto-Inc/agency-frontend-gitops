@@ -4,4 +4,4 @@ namespace: dev-agency-frontend
 resources: [deployment.yaml, service.yaml, externalsecret.yaml, ingress.yaml]   # namespace, quota, network policy: platform (gitops-backstage)
 images:
   - name: ghcr.io/everesto-inc/agency-frontend
-    newTag: sha-74d26de   # changed by "Deploy" in Backstage — then Sync in ArgoCD
+    newTag: sha-a82b831   # changed by "Deploy" in Backstage — then Sync in ArgoCD
